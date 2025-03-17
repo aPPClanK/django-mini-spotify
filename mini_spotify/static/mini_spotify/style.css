@@ -1,0 +1,210 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+.main {
+  overflow-x: hidden;
+  display: grid;
+  grid-template-areas: 
+  "greetings greetings"
+  "info playlist"
+  "player player";
+  grid-template-columns: 7fr 3fr;
+  grid-template-rows: 1fr 8fr 1fr;
+  height: 100vh;
+  width: 100vw;
+}
+
+.greetings {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  border-bottom: 1px solid rgb(175, 175, 175);
+  background-color: #eeeeee;
+  grid-area: greetings;
+}
+.greetings-text {
+  padding-left: 50px;
+  font-weight: 800;
+  font-size: large;
+}
+.logout {
+  padding-right: 50px;
+}
+.logout input {
+  padding: 10px;
+  width: 50px;
+  height: 50px;
+  background-image: url("data:image/png;base64,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");
+  background-position: center;
+  background-size: 80%;
+  background-repeat: no-repeat;
+  background-color: rgb(249, 249, 249);
+  cursor: pointer;
+}
+
+.info {
+  grid-area: info;
+  align-content: center;
+  text-align: center;
+  line-height: 24px;
+  height: 100%;
+}
+
+#artist-info {
+  display: grid;
+  grid-template-areas: 
+  "name"
+  "desc"
+  "back";
+  grid-template-rows: 1fr 8fr 1fr;
+  height: 100%;
+}
+
+.artist-name {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  grid: "name";
+  font-weight: bold;
+  font-size: 24px;
+  border-bottom: 1px solid rgb(175, 175, 175);
+}
+
+.artist-desc {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  grid: "desc";
+}
+
+.back-to-info {
+  display: flex;
+  justify-content: end;
+  align-items: end;
+  grid: "back";
+  padding: 10px;
+}
+
+#current-song-title {
+  line-height: 42px;
+}
+
+#current-song-artist:hover, .back-to-info span:hover {
+  color: darkgray;
+  cursor: pointer;
+}
+
+.playlist {
+  border-left: 1px solid rgb(175, 175, 175);
+  grid-area: playlist;
+  overflow-y: scroll;
+  background-color: #f5f5f5;
+}
+
+.search-input {
+  border-bottom: 1px solid rgb(175, 175, 175);
+  padding: 5px;
+}
+
+#search-song {
+  width: 50%;
+}
+
+.playlist ul {
+  padding: 0;
+}
+
+.playlist span {
+  padding: 5px 5px;
+  border-bottom: 1px solid rgb(175, 175, 175);
+}
+
+.player {
+  border-top: 1px solid rgb(175, 175, 175);
+  grid-area: player;
+  background-color: #eeeeee;
+}
+.seek-slider, .buttons {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  padding-left: 20%;
+  padding-right: 20%;
+  margin-top: 10px;
+}
+.seek-slider span {
+  font-weight: bold;
+}
+.buttons {
+  padding-top: 10px;
+  gap: 50px;
+  margin: 0;
+}
+
+.buttons button {
+  background: none;
+  border: none;
+  transform: scale(1.5);
+  cursor: pointer;
+}
+
+.volume-slider {
+  display: flex;
+  justify-content: end;
+  align-items: center;
+  gap: 10px;
+  padding: 0px 40px 15px;
+}
+#volume-slider {
+  cursor: pointer;
+}
+
+.active {
+  font-weight: bold;
+}
+
+input[type="range"] {
+    height: 5px;
+    border-radius: 10px;
+    outline: none;
+    background-color: rgb(117, 117, 117);
+}
+#seek-slider {
+  width: 100%;
+  cursor: pointer;
+}
+#seek-slider::-moz-range-thumb {
+  opacity: var(--thumb-opacity, 1);
+  transition: opacity 0.1s ease;
+}
+#seek-slider::-webkit-slider-thumb {
+  opacity: var(--thumb-opacity, 1);
+  transition: opacity 0.1s ease;
+}
+#seek-slider:hover::-moz-range-thumb {
+  opacity: 1;
+  width: 14px;
+  height: 14px;
+  background: rgb(240, 240, 240);
+}
+input[type="range"]::-moz-range-progress {
+    height: 5px;
+    width: 5px;
+    border-radius: 10px 0 0 10px;
+    background-color: rgb(179, 179, 179); 
+}
+.playlist-item {
+  width: fit-content;
+}
+.like-button {
+  border: none;
+  background: none;
+  cursor: pointer;
+}

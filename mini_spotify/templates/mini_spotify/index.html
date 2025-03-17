@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mini Spotify</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'mini_spotify/style.css' %}">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="{% static 'mini_spotify/index.js' %}"></script>
+</head>
+<body>
+    {% csrf_token %}
+    <nav>
+        <div class="main">
+            <div class="greetings">
+                <div class="greetings-text">
+                    <p>Привет {{ user }}!</p>
+                </div>
+                <div class="logout">
+                    <form action="{% url 'mini_spotify:logout_page' %}" method="POST">
+                        {% csrf_token %}
+                        <input type="submit" value="">
+                    </form>
+                </div>
+            </div>
+            <div class="info">
+                <div id="current-song-info">
+                    <audio id="audio"></audio>
+                    <h2 id="current-song-title"></h2>
+                    <p id="current-song-artist"></p>
+                    <p id="current-song-album"></p>
+                    <p id="current-song-playcount"></p>
+                    <p id="current-song-likes"></p>
+                </div>
+                <div id="artist-info" style="display: none; background-image: url();">
+                    <div class="artist-name"></div>
+                    <div class="artist-desc"></div>
+                    <div class="back-to-info"><span>back</span></div>
+                </div>
+            </div>
+            <div class="playlist">
+                <div class="search-input">
+                    <input type="text" id="search-song" name="search-song" placeholder="Искать трек...">
+                    <label for="filter-liked">Лайкнутые</label>
+                    <input type="checkbox" id="filter-liked" name="filter-liked">
+                </div>
+                <ul id="playlist">
+                    {% for song in songs %}
+                    <span style="display: block;">
+                        <li style="display: inline;" 
+                            data-song-id="{{ song.id }}" 
+                            data-song-name="{{ song.name }}" 
+                            data-song-artist="{{ song.artist.name }}"
+                            data-song-artist-desc="{{ song.artist.description }}"
+                            data-song-artist-photo="{{ song.artist.photo.url }}"
+                            data-song-album="{{ song.album.name|default:'-' }}"
+                            data-song-file="{{ song.file.url }}"
+                            data-song-playcount="{{ song.playcount }}"
+                            data-song-likes="{{ song.likes.count }}"
+                            class="playlist-item">
+                            {{ song.name }} — {{ song.artist.name }}
+                        </li>
+                        <button class="like-button" 
+                                data-liked="{% if request.user in song.likes.all %}true{% else %}false{% endif %}">
+                            {% if request.user in song.likes.all %}
+                                ❤️
+                            {% else %}
+                                🤍
+                            {% endif %}
+                        </button>
+                    </span>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="player">
+                <div class="seek-slider">
+                    <span id="current-time">0:00</span>
+                    <input type="range" id="seek-slider" min="0" step="1">
+                    <span id="duration">0:00</span>
+                </div>
+                <div class="buttons">
+                    <button id="prev-button"><i class="material-icons">skip_previous</i></button>
+                    <button id="play-button"><i class="material-icons">play_circle_filled</i></button>
+                    <button id="next-button"><i class="material-icons">skip_next</i></button>
+                </div>
+                <div class="volume-slider">
+                    <i class="material-icons">volume_up</i>
+                    <input type="range" id="volume-slider" min="0" max="100" value="25">
+                </div>
+            </div>
+        </div>
+    </nav>
+</body>
+</html>
