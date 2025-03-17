@@ -15,7 +15,7 @@
         <div class="main">
             <div class="greetings">
                 <div class="greetings-text">
-                    <p>Привет {{ user }}!</p>
+                    <p>Hello, {{ user }}!</p>
                 </div>
                 <div class="logout">
                     <form action="{% url 'mini_spotify:logout_page' %}" method="POST">
@@ -36,13 +36,13 @@
                 <div id="artist-info" style="display: none; background-image: url();">
                     <div class="artist-name"></div>
                     <div class="artist-desc"></div>
-                    <div class="back-to-info"><span>back</span></div>
+                    <div class="back-to-info"><span>Back</span></div>
                 </div>
             </div>
             <div class="playlist">
                 <div class="search-input">
-                    <input type="text" id="search-song" name="search-song" placeholder="Искать трек...">
-                    <label for="filter-liked">Лайкнутые</label>
+                    <input type="text" id="search-song" name="search-song" placeholder="Search for a track...">
+                    <label for="filter-liked">Liked</label>
                     <input type="checkbox" id="filter-liked" name="filter-liked">
                 </div>
                 <ul id="playlist">

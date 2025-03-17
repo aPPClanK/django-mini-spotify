@@ -13,14 +13,14 @@ document.addEventListener("DOMContentLoaded", () => {
     const currentSongPlayCount = document.getElementById("current-song-playcount");
     const currentSongLikes = document.getElementById("current-song-likes");
     const playlistItems = document.querySelectorAll(".playlist-item");
-    const searchSong = document.getElementById("search-song")
-    const filterLiked = document.getElementById("filter-liked")
+    const searchSong = document.getElementById("search-song");
+    const filterLiked = document.getElementById("filter-liked");
 
     audio.volume = 0.25;
     let currentIndex = 0;
     const songs = Array.from(playlistItems);
     
-    // Фильтр любимых треков
+    // Filter favorite tracks
     filterLiked.addEventListener("change", () => {
         if (filterLiked.checked) {
             playlistItems.forEach((item) => {
@@ -36,28 +36,29 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    // Функция фильтра треков
+    // Track search function
     searchSong.addEventListener("input", (event) => {
         const searchInput = event.target.value.toLowerCase();
         playlistItems.forEach((item) => {
             const itemText = item.textContent.toLowerCase();
-            if (itemText.includes(searchInput)){
+            if (itemText.includes(searchInput)) {
                 item.parentElement.style.display = "block";
             } else {
-                item.parentElement.style.display = "none"
+                item.parentElement.style.display = "none";
             }
         });
     });
-    // Функция обновления информации о текущем треке
+
+    // Function to update current track info
     const updateCurrentSongInfo = (songElement) => {
         audio.src = songElement.dataset.songFile;
         currentSongTitle.textContent = songElement.dataset.songName;
-        currentSongArtist.textContent = "Исполнитель: " + songElement.dataset.songArtist;
-        currentSongAlbum.textContent = "Альбом: " + (songElement.dataset.songAlbum || "Неизвестный");
-        currentSongPlayCount.textContent = "Прослушивали: " + (songElement.dataset.songPlaycount);
-        currentSongLikes.textContent = "Понравилось: " + (songElement.dataset.songLikes);
+        currentSongArtist.textContent = "Artist: " + songElement.dataset.songArtist;
+        currentSongAlbum.textContent = "Album: " + (songElement.dataset.songAlbum || "Unknown");
+        currentSongPlayCount.textContent = "Played: " + (songElement.dataset.songPlaycount);
+        currentSongLikes.textContent = "Likes: " + (songElement.dataset.songLikes);
 
-        // Переход на информацию об исполнителе 
+        // Navigate to artist information
         currentSongArtist.addEventListener("click", () => {
             const artistPhoto = songElement.dataset.songArtistPhoto;
 
@@ -68,25 +69,25 @@ document.addEventListener("DOMContentLoaded", () => {
             document.getElementById("artist-info").style.backgroundSize = "cover";
             document.getElementById("artist-info").style.backgroundPosition = "center";
             document.querySelector(".artist-name").textContent = songElement.dataset.songArtist;
-            document.querySelector(".artist-desc").textContent = "Описание: " + songElement.dataset.songArtistDesc;
-        })
-    
+            document.querySelector(".artist-desc").textContent = "Description: " + songElement.dataset.songArtistDesc;
+        });
+
         document.querySelector(".back-to-info").firstChild.addEventListener("click", () => {
             document.getElementById("artist-info").style.display = "none";
             document.getElementById("current-song-info").style.display = "block";
-        })
+        });
 
-        // Убираем выделение у всех и добавляем активный класс к текущему
+        // Remove selection from all and add active class to the current track
         songs.forEach(item => item.classList.remove("active"));
         songElement.classList.add("active");
 
         audio.play();
     };
 
-    // Устанавливаем первый трек
+    // Set the first track
     updateCurrentSongInfo(songs[currentIndex]);
 
-    // Обработчик клика по плейлисту для смены трека
+    // Click handler for playlist to switch track
     songs.forEach((item, index) => {
         const likeButton = item.nextElementSibling;
 
@@ -101,7 +102,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    // Обработчик кнопки Play/Pause
+    // Play/Pause button handler
     playButton.addEventListener("click", () => {
         if (audio.paused) {
             audio.play();
@@ -114,106 +115,98 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-
-    // Следующий трек
+    // Next track
     nextButton.addEventListener("click", () => {
         currentIndex = (currentIndex + 1) % songs.length;
         updateCurrentSongInfo(songs[currentIndex]);
     });
 
-    // Предыдущий трек
+    // Previous track
     prevButton.addEventListener("click", () => {
         currentIndex = (currentIndex - 1 + songs.length) % songs.length;
         updateCurrentSongInfo(songs[currentIndex]);
     });
 
-    // Автоматическое переключение на следующий трек после завершения текущего
+    // Auto-play next track when current one ends
     audio.addEventListener("ended", () => {
         currentIndex = (currentIndex + 1) % songs.length;
         updateCurrentSongInfo(songs[currentIndex]);
     });
 
-    // Обновление слайдера и отображение времени
+    // Update slider and time display
     audio.addEventListener("timeupdate", () => {
         seekSlider.value = audio.currentTime;
         currentTimeDisplay.textContent = formatTime(audio.currentTime);
     });
 
-    // Обновление продолжительности трека
+    // Update track duration
     audio.addEventListener("loadedmetadata", () => {
         seekSlider.max = audio.duration;
         durationDisplay.textContent = formatTime(audio.duration);
     });
 
-    // Изменение позиции трека через слайдер
+    // Change track position via slider
     seekSlider.addEventListener("input", () => {
         audio.currentTime = seekSlider.value;
     });
 
-    // Изменение громкости
+    // Change volume
     volumeSlider.addEventListener("input", (e) => {
         audio.volume = e.target.value / 100;
     });
 
-    // Форматирование времени (минуты:секунды)
+    // Format time (minutes:seconds)
     function formatTime(seconds) {
         const mins = Math.floor(seconds / 60);
         const secs = Math.floor(seconds % 60);
         return `${mins}:${secs < 10 ? "0" : ""}${secs}`;
     }
 
-    // Обновление прослушиваний
+    // Update play count
     function updatePlaycount(songId) {
         fetch(`/mini_spotify/update_playcount/${songId}/`, {
             method: "POST",
             headers: {  
-                "X-CSRFToken": getCSRFToken(),  // CSRF-токен
+                "X-CSRFToken": getCSRFToken(),
             }
         })
-            .then(response => response.json())
-            .then(data => console.log("Song updated: ", data, " for ", songId))
-            .catch(error => console.error("Error updating playcount:", error));
+        .then(response => response.json())
+        .catch(error => console.error("Error updating playcount:", error));
     }
 
-    // Смена лайка
+    // Toggle like
     function toggleLike(songId, button) {
         fetch(`/mini_spotify/toggle_like/${songId}/`, {
             method: "POST",
             headers: {
-                "X-CSRFToken": getCSRFToken(),  // CSRF-токен
+                "X-CSRFToken": getCSRFToken(),
             }
         })
-            .then(response => response.json())
-            .then(data => {
-                console.log("Like toggled:", data, " for ", songId)
-                button.dataset.liked = data.liked; // ОБНОВЛЯЕМ значение data-liked в DOM
-
-                if (data.liked) {
-                    button.textContent = "❤️"; // Если лайкнули, красное сердце
-                } else {
-                    button.textContent = "🤍"; // Если убрали лайк, белое сердце
-                }
-            })
-            .catch(error => console.error("Error toggling like:", error));
+        .then(response => response.json())
+        .then(data => {
+            button.dataset.liked = data.liked;
+            button.textContent = data.liked ? "❤️" : "🤍";
+        })
+        .catch(error => console.error("Error toggling like:", error));
     }
 
-    // Функция для получения CSRF-токена (важно для POST-запросов в Django)
+    // Function to get CSRF token
     function getCSRFToken() {
         return document.querySelector("[name=csrfmiddlewaretoken]").value;
     }
-
-    // Вешаем обработчик на событие "play"
+    
+    // Attach an event listener to the "play" event
     let playTimeout = null;
     let isPlaycountUpdated = false;
-    let playTime = 0; // Накопленное время прослушивания (в секундах)
+    let playTime = 0; // Accumulated listening time (in seconds)
     let lastPlayTimestamp = null;
 
     audio.addEventListener("play", () => {
-        // Запоминаем время начала воспроизведения
+        // Store the playback start time
         lastPlayTimestamp = Date.now();
 
-        // Если песня достаточно длинная (>=30 сек) и еще не засчитана,
-        // запускаем таймер на 30 секунд
+        // If the song is long enough (>=30 sec) and hasn't been counted yet,
+        // start a 30-second timer
         if (!isPlaycountUpdated && audio.duration >= 30) {
             playTimeout = setTimeout(() => {
                 updatePlaycount(currentIndex + 1);
@@ -223,15 +216,15 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     audio.addEventListener("pause", () => {
-        // При паузе вычисляем, сколько времени проигрывалось с момента последнего старта
+        // When paused, calculate how long the song has played since the last start
         if (lastPlayTimestamp) {
             playTime += (Date.now() - lastPlayTimestamp) / 1000;
             lastPlayTimestamp = null;
         }
         clearTimeout(playTimeout);
 
-        // Если песня достаточно длинная и общее прослушанное время >= 30 секунд,
-        // обновляем playcount
+        // If the song is long enough and total listening time >= 30 seconds,
+        // update playcount
         if (audio.duration >= 30 && playTime >= 30 && !isPlaycountUpdated) {
             updatePlaycount(currentIndex + 1);
             isPlaycountUpdated = true;
@@ -239,20 +232,21 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     audio.addEventListener("ended", () => {
-        // Если длительность песни меньше 30 секунд, засчитываем прослушивание независимо от playTime
+        // If the song duration is less than 30 seconds, count the play regardless of playTime
         if (audio.duration < 30) {
             if (!isPlaycountUpdated) {
                 updatePlaycount(currentIndex + 1);
                 isPlaycountUpdated = true;
             }
         }
-        // Если песня длинная (>=30 сек) и общее время прослушивания накопилось, засчитываем
+        // If the song is long (>=30 sec) and total listening time is accumulated, count the play
         else if (playTime >= 30 && !isPlaycountUpdated) {
             updatePlaycount(currentIndex + 1);
             isPlaycountUpdated = true;
         }
-        // Сбрасываем накопленное время и флаг для следующей песни
+        // Reset accumulated time and flag for the next song
         playTime = 0;
         isPlaycountUpdated = false;
     });
+
 });
